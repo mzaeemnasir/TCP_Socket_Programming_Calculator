@@ -19,19 +19,23 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 using namespace std;
 
-int Calculating(int number1, int number2, char operation)
+int Calculating(int &number1, int &number2, int &operation)
 {
+    cout << "Number 1: " << number1 << endl;
+    cout << "Number 2: " << number2 << endl;
+    cout << "Operation: " << operation << endl;
     switch (operation)
     {
-    case '+':
+    case 1:
         return number1 + number2;
-    case '-':
+    case 2:
         return number1 - number2;
-    case '*':
+    case 3:
         return number1 * number2;
-    case '/':
+    case 4:
         return number1 / number2;
     default:
         break;
@@ -42,25 +46,43 @@ int Calculating(int number1, int number2, char operation)
 int Get_inputs(int &Socket)
 {
     char Buffer[1024] = {0};
-    Buffer int number1 = 0;
+    int number1 = 0;
     int number2 = 0;
-    char operation = ' ';
+    int operation = 0;
+    cout << "Sending Data to Server" << endl;
     send(Socket, "Please Enter Number 1: ", strlen("Please Enter Number 1: "), 0);
     read(Socket, Buffer, sizeof(Buffer));
     number1 = atoi(Buffer);
     send(Socket, "Please Enter Number 2: ", strlen("Please Enter Number 2: "), 0);
     read(Socket, Buffer, sizeof(Buffer));
     number2 = atoi(Buffer);
-    send(Socket, "Please Enter Operator: ", strlen("Please Enter Operator: "), 0);
-    read(Socket, Buffer, sizeof(Buffer));
-    operation = Buffer[0];
 
+    send(Socket, "Please Enter Operator: \n", strlen("Please Enter Operator: \n"), 0);
+    do
+    {
+        send(Socket, "Press 1: + (Plus) \n", strlen("Press 1: + (Plus) \n"), 0);
+        send(Socket, "Press 2: - (Subtract) \n", strlen("Press 2: - (Subtract) \n"), 0);
+        send(Socket, "Press 3: * (Multiply) \n", strlen("Press 3: * (Multiply) \n"), 0);
+        send(Socket, "Press 4: / (Divide) \n", strlen("Press 4: / (Divide) \n"), 0);
+        send(Socket, "Enter Your Input: ", strlen("Enter Your Input: "), 0);
+        read(Socket, Buffer, sizeof(Buffer));
+
+        if (Buffer[0] < '1' || Buffer[0] > '4')
+        {
+            send(Socket, "Invalid Input. Please Enter Again: \n", strlen("Invalid Input. Please Enter Again: \n"), 0);
+        }
+
+    } while (Buffer[0] < '1' || Buffer[0] > '4');
+
+    operation = atoi(Buffer);
     // Calculating the result
     int result = Calculating(number1, number2, operation); // This function will return the result
-
     // Sending the result to the client
     send(Socket, "The Result is : ", strlen("The Result is : "), 0);
-    send(Socket, to_string(result).c_str(), strlen(to_string(result).c_str()), 0);
+    cout << "The Result is : " << result << endl;
+    Buffer = atoi(result);
+    cout << "Buffer: " << Buffer << endl;
+    send(Socket, Buffer, strlen(Buffer), 0);
     return 0;
 }
 int main()
@@ -129,6 +151,7 @@ int main()
     }
     else
     {
+        cout << "Getting Inputs" << endl;
         Get_inputs(Client_Socket);
     }
 }

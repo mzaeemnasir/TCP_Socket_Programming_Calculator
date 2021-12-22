@@ -33,17 +33,26 @@ int main()
         cout << "Connection Failed" << endl;
         exit;
     }
-    // sending message to the server
-    cout << "Enter the message to be sent to the server: ";
-    cin >> Buffer;
-    int sen_d = write(Socket, Buffer, strlen(Buffer));
-    if (sen_d < 0)
+    else
     {
-        cout << "Send Failed" << endl;
-        exit;
+        cout << "Connection Successful" << endl;
     }
+    int num = 0;
     // receiving message from the server
-    read(Socket, Buffer, sizeof(Buffer));
-    cout << Buffer << endl;
+    while (read(Socket, Buffer, sizeof(Buffer)))
+    {
+        if (Buffer[strlen(Buffer) - 1] == '\n')
+        {
+            cout << Buffer;
+            // do nothig
+        }
+        else
+        {
+            cout << Buffer;
+            cin >> num;
+            send(Socket, to_string(num).c_str(), strlen(to_string(num).c_str()), 0);
+        }
+    }
+
     return 0;
 }
