@@ -39,20 +39,29 @@ int main()
     }
     int num = 0;
     // receiving message from the server
-    while (read(Socket, Buffer, sizeof(Buffer)))
-    {
-        if (Buffer[strlen(Buffer) - 1] == '\n')
-        {
-            cout << Buffer;
-            // do nothig
-        }
-        else
-        {
-            cout << Buffer;
-            cin >> num;
-            send(Socket, to_string(num).c_str(), strlen(to_string(num).c_str()), 0);
-        }
-    }
 
+    // Reading Number 1 & 2
+    read(Socket, Buffer, sizeof(Buffer));
+    cout << Buffer;
+    cin >> num;
+    send(Socket, to_string(num).c_str(), strlen(to_string(num).c_str()), 0);
+
+    read(Socket, Buffer, sizeof(Buffer));
+    cout << Buffer;
+    cin >> num;
+    send(Socket, to_string(num).c_str(), strlen(to_string(num).c_str()), 0);
+
+    // Displaying Menu
+    read(Socket, Buffer, sizeof(Buffer));
+    cout << Buffer;
+    cin >> num;
+    send(Socket, to_string(num).c_str(), strlen(to_string(num).c_str()), 0);
+    memset(Buffer, 0, sizeof(Buffer));
+    read(Socket, Buffer, sizeof(Buffer));
+    cout << Buffer;
+    memset(Buffer, 0, sizeof(Buffer));
+    read(Socket, Buffer, sizeof(Buffer));
+    cout << Buffer << endl;
+    close(Socket);
     return 0;
 }
